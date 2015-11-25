@@ -35,7 +35,7 @@ public class Main {
         	DataSet training_set = MNISTDataSet.createFromFile(
         		DATA_DIRECTORY+MNISTDataSet.TRAIN_LABEL_NAME,
         		DATA_DIRECTORY+MNISTDataSet.TRAIN_IMAGE_NAME,
-        		200
+        		60000
         	);
         	DataSet test_set = MNISTDataSet.createFromFile(
         		DATA_DIRECTORY+MNISTDataSet.TEST_LABEL_NAME,
@@ -60,7 +60,7 @@ public class Main {
 
 	private static NeuralNetwork<BackPropagation> train(DataSet training_set){
 		System.out.println("Making network.");
-        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 60, 30, training_set.getOutputSize());
+        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 30, training_set.getOutputSize());
         ExtBackPropigation backPropagation = new ExtBackPropigation();
         backPropagation.setMaxIterations(500);
         backPropagation.setLearningRate(0.1);

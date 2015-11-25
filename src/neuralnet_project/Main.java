@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
+import org.neuroph.core.events.LearningEvent;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.Perceptron;
 import org.neuroph.nnet.learning.BackPropagation;
@@ -45,6 +46,8 @@ public class Main {
         	//get a trained neaural net
         	NeuralNetwork<BackPropagation> neural_net = train(training_set);
         	
+    		System.out.println("Testing network.");
+        	
         	//see how well it does with the test set
     		float success = evaluate(neural_net, test_set);
     		
@@ -56,15 +59,21 @@ public class Main {
 	}
 
 	private static NeuralNetwork<BackPropagation> train(DataSet training_set){
-        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 20, training_set.getOutputSize());
-        BackPropagation backPropagation = new BackPropagation();
-        backPropagation.setMaxIterations(10);
+		System.out.println("Making network.");
+        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 60, 30, training_set.getOutputSize());
+        ExtBackPropigation backPropagation = new ExtBackPropigation();
+        backPropagation.setMaxIterations(500);
+        backPropagation.setLearningRate(0.1);
+        backPropagation.setMaxError(0.001);
+        backPropagation.setBatchSize(50);
+		System.out.println("Training network.");
         neural_network.learn(training_set, backPropagation);
         return neural_network;
     }
 	
 	private static float evaluate(NeuralNetwork<BackPropagation> neural_net, DataSet test_set){
 		int number_right = 0;
+		int cur = 0;
 		for(DataSetRow data_row : test_set.getRows()) {
 			neural_net.setInput(data_row.getInput());
 			neural_net.calculate();
@@ -92,7 +101,8 @@ public class Main {
 			if(is_correct){
 				number_right++;
 			}
-
+			
+			System.out.println("     Evaluating... "+(((float)++cur)/((float)test_set.getRows().size())*100)+"%, so far it's looking like "+(((float)number_right)/((float)cur)*100)+"%");
 		}
 		return ((float)number_right)/((float)test_set.getRows().size());
 	}

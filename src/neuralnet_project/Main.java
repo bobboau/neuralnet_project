@@ -4,16 +4,11 @@
 package neuralnet_project;
 
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.core.data.DataSetRow;
-import org.neuroph.core.events.LearningEvent;
 import org.neuroph.nnet.MultiLayerPerceptron;
-import org.neuroph.nnet.Perceptron;
 import org.neuroph.nnet.learning.BackPropagation;
-import org.neuroph.nnet.learning.LMS;
 import org.neuroph.samples.convolution.MNISTDataSet;
 import org.neuroph.util.TransferFunctionType;
 
@@ -35,7 +30,7 @@ public class Main {
         	DataSet training_set = MNISTDataSet.createFromFile(
         		DATA_DIRECTORY+MNISTDataSet.TRAIN_LABEL_NAME,
         		DATA_DIRECTORY+MNISTDataSet.TRAIN_IMAGE_NAME,
-        		200
+        		60000
         	);
         	DataSet test_set = MNISTDataSet.createFromFile(
         		DATA_DIRECTORY+MNISTDataSet.TEST_LABEL_NAME,
@@ -60,11 +55,16 @@ public class Main {
 
 	private static NeuralNetwork<BackPropagation> train(DataSet training_set){
 		System.out.println("Making network.");
-        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 1024, training_set.getOutputSize());
-        BackPropagation backPropagation = new ExtBackPropigation();
-        backPropagation.setMaxIterations(100);
+        NeuralNetwork<BackPropagation> neural_network = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, training_set.getInputSize(), 30, training_set.getOutputSize());
+        ExtBackPropigation backPropagation = new ExtBackPropigation();
+        backPropagation.setMaxIterations(500);
         backPropagation.setLearningRate(0.1);
         backPropagation.setMaxError(0.001);
+        backPropagation.setBatchSize(500);
+        backPropagation.setBatchSizeDecayRate(1);
+        backPropagation.setBatchSizeRegenRate(1.0);
+        backPropagation.setLearningDecayRate(0.95);
+        backPropagation.setLearningRegenRate(1.0);
 		System.out.println("Training network.");
         neural_network.learn(training_set, backPropagation);
         return neural_network;

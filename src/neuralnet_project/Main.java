@@ -25,23 +25,14 @@ public class Main {
 		int BatchSize=Integer.valueOf(args[0]);
 		int MaxIterations=Integer.valueOf(args[1]);
 		double MaxError=Double.valueOf(args[2]);
-		double BatchSizeDecayRate=Double.valueOf(args[3]);
-		double BatchSizeRegenRate=Double.valueOf(args[4]);
-		double LearningDecayRate=Double.valueOf(args[5]);
-		double LearningRegenRate=Double.valueOf(args[6]);
+		double LearningRate=Double.valueOf(args[3]);
+		double BatchSizeDecayRate=Double.valueOf(args[4]);
+		double BatchSizeRegenRate=Double.valueOf(args[5]);
+		double LearningDecayRate=Double.valueOf(args[6]);
+		double LearningRegenRate=Double.valueOf(args[7]);
+		int DataSet = Integer.valueOf(args[8]);
 
 		try {
-			/*
-			//System.in
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			int MaxIterations = Integer.parseInt(reader.readLine());
-			double MaxError= Double.valueOf(reader.readLine());
-			int BatchSize=Integer.parseInt(reader.readLine());
-			double BatchSizeDecayRate=Double.valueOf(reader.readLine());
-			double BatchSizeRegenRate=Double.valueOf(reader.readLine());
-			double LearningDecayRate=Double.valueOf(reader.readLine());
-			double LearningRegenRate=Double.valueOf(reader.readLine());
-			*/
 
 			//make the training and test data sets
 			DataSet training_set = MNISTDataSet.createFromFile(
@@ -49,43 +40,23 @@ public class Main {
 					MNISTDataSet.TRAIN_IMAGE_NAME,
 					50000
 			);
-			DataSet validation_set = mnistdataread.createFromFile(
-					MNISTDataSet.TRAIN_LABEL_NAME,
-					MNISTDataSet.TRAIN_IMAGE_NAME,
-					10000
-			);
 			DataSet test_set = MNISTDataSet.createFromFile(
 					MNISTDataSet.TEST_LABEL_NAME,
 					MNISTDataSet.TEST_IMAGE_NAME,
 					10000
 			);
-
-			//get a trained neaural net
-			double[] learning_rate=new double[34];
-			float[] accuracy=new float[34];
-			int i;
-			for(i=0;i<9;i++) {
-				learning_rate[i]=0.001*(i+1);
-			}
-			for(i=9;i<34;i++) {
-				learning_rate[i]=0.01*(i-8);
-			}
-			for(i=0;i<34;i++) {
-				NeuralNetwork<BackPropagation> net = train(validation_set,learning_rate[i],BatchSize,MaxIterations,MaxError,BatchSizeDecayRate,BatchSizeRegenRate,LearningDecayRate,LearningRegenRate);
-				float success = evaluate(net, test_set);
-				System.out.println("Neural net evaluated with "+success*100+"% accuracy.");
-				accuracy[i]=success;
-			}
-			int maxindex=0;
-			double max=accuracy[0];
-			for(i=0;i<34;i++) {
-				if(accuracy[i]>max) {
-					max = accuracy[i];
-					maxindex=i;
-				}
-				System.out.println("Learning rate is "+learning_rate[i]+", accuracy is "+accuracy[i]);
-			}
-			NeuralNetwork<BackPropagation> actualnet = train(training_set,learning_rate[maxindex],BatchSize,MaxIterations,MaxError,BatchSizeDecayRate,BatchSizeRegenRate,LearningDecayRate,LearningRegenRate);
+			DataSet validation_set = mnistdataread.createFromFile(
+					MNISTDataSet.TRAIN_LABEL_NAME,
+					MNISTDataSet.TRAIN_IMAGE_NAME,
+					10000
+			);
+			
+			DataSet[] data_sets = new DataSet[3];
+			data_sets[0] = training_set;
+			data_sets[1] = test_set;
+			data_sets[2] = validation_set;
+			
+			NeuralNetwork<BackPropagation> actualnet = train(data_sets[DataSet],LearningRate,BatchSize,MaxIterations,MaxError,BatchSizeDecayRate,BatchSizeRegenRate,LearningDecayRate,LearningRegenRate);
 			System.out.println("Testing network.");
 
 			//see how well it does with the test set
